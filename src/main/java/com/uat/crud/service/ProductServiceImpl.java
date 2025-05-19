@@ -4,6 +4,8 @@ import com.uat.crud.model.Product;
 import com.uat.crud.model.ProductDTO;
 import com.uat.crud.repository.ProductRepo;
 import com.uat.crud.mapper.ProductMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,14 @@ public class ProductServiceImpl implements ProductService {
 
     public ProductServiceImpl(ProductRepo ProductRepo) {
         this.ProductRepo = ProductRepo;
+    }
+
+    @Override
+    public Page<ProductDTO> searchProducts(String name, double minPrice, double maxPrice, int page, int size) {
+        Page<Product> productPage = ProductRepo.findByNameContainingIgnoreCaseAndPriceBetween(
+                name, minPrice, maxPrice, PageRequest.of(page, size)
+        );
+        return productPage.map(ProductMapper::toDTO);
     }
 
     @Override
